@@ -34,6 +34,7 @@ import FloatingActions from "./components/FloatingActions";
 import PageLoader from "./components/PageLoader";
 import { FaLinkedin, FaLinkedinIn } from "react-icons/fa";
 
+
 // Clean numeric targets paired with their display suffixes
 const stats = [
   { icon: Award, target: 98, suffix: "%", label: "Success Rate" },
@@ -83,7 +84,7 @@ const team = [
     specialty: 'High-Value Asset Tracing & Injunctions',
     experience: '5+ Yrs Exp',
     bar: 'Founder of NestEgg Assurance',
-    img: '../src/assets/ceo-image.jpeg',
+    img: '/ceo-image.jpeg',
     bio: 'Former federal prosecutor specializing in institutional recovery, frozen offshore liquidity, and multi-tier bank dispute litigation.',
     linkedin: '#',
     email: 'm.vance@nealegal.com',
@@ -94,7 +95,7 @@ const team = [
     specialty: 'Ransomware Shield & Crypto Forensics',
     experience: '5+ Yrs Exp',
     bar: 'Certified Forensic Legal Specialist',
-    img: '../src/assets/security-analyst.jpeg',
+    img: '/security-analyst.jpeg',
     bio: 'Pioneered rapid blockchain address freeze petitions across 14 jurisdictions and sovereign cyber defense compliance frameworks.',
     linkedin: '#',
     email: 'e.rostova@nealegal.com',
@@ -105,7 +106,7 @@ const team = [
     specialty: 'Corporate Espionage & Anti-Fraud',
     experience: '15+ Yrs Exp',
     bar: 'ACFE Certified Examiner',
-    img: '../src/assets/lawyer.jpeg',
+    img: '/lawyer.jpeg',
     bio: 'Cyber Law Consultant specializing in digital forensics advisory, cybercrime regulatory compliance, and technology law.',
     linkedin: '#',
     email: 'd.sterling@nealegal.com',
@@ -216,7 +217,7 @@ export default function App() {
         <nav className="fixed md:py-2.5 py-1  left-0 right-0 z-50 bg-transparent backdrop-blur-md">
           <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
             <img
-              src="../src/assets/logo.png"
+              src="/logo.png"
               alt="Logo"
               className="h-24 w-24 object-contain"
             />
@@ -317,7 +318,7 @@ export default function App() {
 <section className="relative min-h-screen flex flex-col md:flex-row md:items-center justify-between pt-28 pb-16 md:py-36 overflow-hidden">
   {/* Background Image with Slow Zoom-Out */}
   <motion.img 
-    src="../src/assets/hero.png" 
+    src="/hero.png" 
     alt="Hero Background" 
     initial={{ scale: 1.08, filter: 'blur(4px)' }}
     animate={
@@ -388,8 +389,8 @@ export default function App() {
       <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-900">
         <video
           ref={videoRef}
-          src="../src/assets/fraud-calling.mp4" 
-          poster="../src/assets/prev1.png"
+          src="/cyber-awareness.mp4" 
+          poster="/prev1.png"
           playsInline
           muted={isMuted}
           onEnded={() => setIsPlaying(false)}
