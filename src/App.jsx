@@ -389,7 +389,7 @@ export default function App() {
       <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-900">
         <video
           ref={videoRef}
-          src="/cyber-awareness.mp4" 
+          src="/fraud-calling.mp4" 
           poster="/prev1.png"
           playsInline
           muted={isMuted}
