@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+
+@theme {
+  --font-smooch: "Fira Sans", sans-serif;
+  --text-common: "#f889"
+}
+
+html {
+  scroll-behavior: smooth;
+}
