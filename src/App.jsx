@@ -8,15 +8,15 @@ import {
   animate,
 } from "framer-motion";
 import {
-  ShieldCheck, 
-  Scale, 
-  Search, 
-  Lock, 
-  Briefcase, 
-  FileText, 
-  Menu, 
-  X, 
-  ArrowRight, 
+  ShieldCheck,
+  Scale,
+  Search,
+  Lock,
+  Briefcase,
+  FileText,
+  Menu,
+  X,
+  ArrowRight,
   ChevronRight,
   Star,
   Users,
@@ -26,14 +26,14 @@ import {
   Play,
   Pause,
   Volume2,
-  VolumeX, 
-  Quote, 
-  CheckCircle2
+  VolumeX,
+  Quote,
+  CheckCircle2,
+  Check, Loader2
 } from "lucide-react";
 import FloatingActions from "./components/FloatingActions";
 import PageLoader from "./components/PageLoader";
 import { FaLinkedin, FaLinkedinIn } from "react-icons/fa";
-
 
 // Clean numeric targets paired with their display suffixes
 const stats = [
@@ -42,7 +42,6 @@ const stats = [
   { icon: Briefcase, target: 490, suffix: "+", label: "Cases Resolved" },
   { icon: Clock, target: 5, suffix: "+", label: "Years of Experience" },
 ];
-
 
 const services = [
   {
@@ -79,43 +78,44 @@ const services = [
 
 const team = [
   {
-    name: 'Vimal',
-    role: 'CEO & Founder of NestEgg Assurance',
-    specialty: 'High-Value Asset Tracing & Injunctions',
-    experience: '5+ Yrs Exp',
-    bar: 'Founder of NestEgg Assurance',
-    img: '/ceo-image.jpeg',
-    bio: 'Former federal prosecutor specializing in institutional recovery, frozen offshore liquidity, and multi-tier bank dispute litigation.',
-    linkedin: '#',
-    email: 'm.vance@nealegal.com',
+    name: "Vimal",
+    role: "CEO & Founder of NestEgg Assurance",
+    specialty: "High-Value Asset Tracing & Injunctions",
+    experience: "5+ Yrs Exp",
+    bar: "Founder of NestEgg Assurance",
+    img: "/ceo-image.jpeg",
+    bio: "Former federal prosecutor specializing in institutional recovery, frozen offshore liquidity, and multi-tier bank dispute litigation.",
+    linkedin: "#",
+    email: "m.vance@nealegal.com",
   },
   {
-    name: 'Shinju K S',
-    role: 'Head of Cyber & Digital Assets',
-    specialty: 'Ransomware Shield & Crypto Forensics',
-    experience: '5+ Yrs Exp',
-    bar: 'Certified Forensic Legal Specialist',
-    img: '/security-analyst.jpeg',
-    bio: 'Pioneered rapid blockchain address freeze petitions across 14 jurisdictions and sovereign cyber defense compliance frameworks.',
-    linkedin: '#',
-    email: 'e.rostova@nealegal.com',
+    name: "Shinju K S",
+    role: "Head of Cyber & Digital Assets",
+    specialty: "Ransomware Shield & Crypto Forensics",
+    experience: "5+ Yrs Exp",
+    bar: "Certified Forensic Legal Specialist",
+    img: "/security-analyst.jpeg",
+    bio: "Pioneered rapid blockchain address freeze petitions across 14 jurisdictions and sovereign cyber defense compliance frameworks.",
+    linkedin: "#",
+    email: "e.rostova@nealegal.com",
   },
   {
-    name: 'Ebin Johny',
-    role: 'Advocate',
-    specialty: 'Corporate Espionage & Anti-Fraud',
-    experience: '15+ Yrs Exp',
-    bar: 'ACFE Certified Examiner',
-    img: '/lawyer.jpeg',
-    bio: 'Cyber Law Consultant specializing in digital forensics advisory, cybercrime regulatory compliance, and technology law.',
-    linkedin: '#',
-    email: 'd.sterling@nealegal.com',
+    name: "Ebin Johny",
+    role: "Advocate",
+    specialty: "Corporate Espionage & Anti-Fraud",
+    experience: "15+ Yrs Exp",
+    bar: "ACFE Certified Examiner",
+    img: "/lawyer.jpeg",
+    bio: "Cyber Law Consultant specializing in digital forensics advisory, cybercrime regulatory compliance, and technology law.",
+    linkedin: "#",
+    email: "d.sterling@nealegal.com",
   },
 ];
 
 const testimonials = [
   {
-    quote: "Their intervention on our frozen operational accounts saved our firm from severe contractual breaches. Handled within 72 hours with zero regulatory friction.",
+    quote:
+      "Their intervention on our frozen operational accounts saved our firm from severe contractual breaches. Handled within 72 hours with zero regulatory friction.",
     client: "TechCorp Logistics",
     author: "Alexander Chen",
     role: "CFO, Global Operations",
@@ -123,7 +123,8 @@ const testimonials = [
     rating: 5,
   },
   {
-    quote: "Discreet, ruthlessly efficient, and technically literate in dealing with multi-jurisdictional cyber extortion and ransom negotiations.",
+    quote:
+      "Discreet, ruthlessly efficient, and technically literate in dealing with multi-jurisdictional cyber extortion and ransom negotiations.",
     client: "Apex Capital Partners",
     author: "Sarah Jenkins, Esq.",
     role: "Managing General Counsel",
@@ -131,7 +132,8 @@ const testimonials = [
     rating: 5,
   },
   {
-    quote: "Recovered over $1.8M lost to an unauthorized SWIFT wire diversion. Their forensic tracing speed was unmatched by standard law enforcement channels.",
+    quote:
+      "Recovered over $1.8M lost to an unauthorized SWIFT wire diversion. Their forensic tracing speed was unmatched by standard law enforcement channels.",
     client: "Vanguard Maritime Ltd.",
     author: "Dmitri Volkov",
     role: "Director of Asset Protection",
@@ -139,7 +141,8 @@ const testimonials = [
     rating: 5,
   },
   {
-    quote: "NEA handled our company's high-stakes whistleblower subpoena with complete discretion and shielded our intellectual infrastructure without public leak.",
+    quote:
+      "NEA handled our company's high-stakes whistleblower subpoena with complete discretion and shielded our intellectual infrastructure without public leak.",
     client: "BioSynthetix Labs",
     author: "Claire Moreau",
     role: "Chief Compliance Officer",
@@ -188,6 +191,49 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = React.useRef(null);
+  const [formData, setFormData] = useState({
+  name: "",
+  email: "",
+  category: "Frozen Bank Account",
+  message: "",
+});
+const [submitting, setSubmitting] = useState(false);
+const [submitStatus, setSubmitStatus] = useState(null);
+
+const handleChange = (e) => {
+  setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+};
+
+const handleContactSubmit = async (e) => {
+  e.preventDefault();
+  setSubmitting(true);
+  setSubmitStatus(null);
+
+  try {
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      setSubmitStatus("success");
+      setFormData({
+        name: "",
+        email: "",
+        category: "Frozen Bank Account",
+        message: "",
+      });
+    } else {
+      setSubmitStatus("error");
+    }
+  } catch (err) {
+    setSubmitStatus("error");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -207,6 +253,20 @@ export default function App() {
       videoRef.current.muted = !isMuted;
       setIsMuted(!isMuted);
     }
+  };
+
+  const handleNavClick = (e, targetId) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+
+
+    // Allow menu exit animation to start, then smoothly scroll to target section
+    setTimeout(() => {
+      const targetElement = document.querySelector(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 120);
   };
 
   return (
@@ -272,40 +332,41 @@ export default function App() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="md:hidden border-b border-slate-800 bg-slate-900 px-6 py-6 space-y-4"
+                transition={{ duration: 0.25 }}
+                className="md:hidden border-b border-slate-800 bg-slate-950/95 backdrop-blur-xl px-6 py-6 space-y-4"
               >
                 <a
                   href="#about"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-slate-300"
+                  onClick={(e) => handleNavClick(e, "#about")}
+                  className="block text-slate-300 text-lg hover:text-amber-400 transition-colors"
                 >
                   About
                 </a>
                 <a
                   href="#services"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-slate-300"
+                  onClick={(e) => handleNavClick(e, "#services")}
+                  className="block text-slate-300 text-lg hover:text-amber-400 transition-colors"
                 >
                   Services
                 </a>
                 <a
                   href="#team"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-slate-300"
+                  onClick={(e) => handleNavClick(e, "#team")}
+                  className="block text-slate-300 text-lg hover:text-amber-400 transition-colors"
                 >
                   Team
                 </a>
                 <a
                   href="#testimonials"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-slate-300"
+                  onClick={(e) => handleNavClick(e, "#testimonials")}
+                  className="block text-slate-300 text-lg hover:text-amber-400 transition-colors"
                 >
                   Testimonials
                 </a>
                 <a
                   href="#contact"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-amber-400 font-medium"
+                  onClick={(e) => handleNavClick(e, "#contact")}
+                  className="block text-center py-3 rounded-lg bg-amber-600 text-white font-medium shadow-md shadow-amber-900/30"
                 >
                   SCHEDULE CONSULTATION
                 </a>
@@ -315,127 +376,145 @@ export default function App() {
         </nav>
 
         {/* Hero Section */}
-<section className="relative min-h-screen flex flex-col md:flex-row md:items-center justify-between pt-28 pb-16 md:py-36 overflow-hidden">
-  {/* Background Image with Slow Zoom-Out */}
-  <motion.img 
-    src="/hero.png" 
-    alt="Hero Background" 
-    initial={{ scale: 1.08, filter: 'blur(4px)' }}
-    animate={
-      !loading 
-        ? { scale: 1, filter: 'blur(0px)' } 
-        : { scale: 1.08, filter: 'blur(4px)' }
-    }
-    transition={{
-      duration: 1.4,
-      ease: [0.25, 1, 0.5, 1],
-    }}
-    className="absolute inset-0 w-full h-full object-cover object-center"
-  />
+        <section className="relative min-h-screen flex flex-col md:flex-row md:items-center justify-between pt-28 pb-16 md:py-36 overflow-hidden">
+          {/* Background Image with Slow Zoom-Out */}
+          <motion.img
+            src="/hero.png"
+            alt="Hero Background"
+            initial={{ scale: 1.08, filter: "blur(4px)" }}
+            animate={
+              !loading
+                ? { scale: 1, filter: "blur(0px)" }
+                : { scale: 1.08, filter: "blur(4px)" }
+            }
+            transition={{
+              duration: 1.4,
+              ease: [0.25, 1, 0.5, 1],
+            }}
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
 
-  {/* Contrast Vignette Gradient */}
-  <div className="absolute inset-0 bg-linear-to-b md:bg-linear-to-r from-slate-950/70 via-slate-950/60 to-slate-950/75" />
+          {/* Contrast Vignette Gradient */}
+          <div className="absolute inset-0 bg-linear-to-b md:bg-linear-to-r from-slate-950/70 via-slate-950/60 to-slate-950/75" />
 
-  {/* Main Container */}
-  <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-6 w-full flex flex-col items-start justify-center">
-    
-    {/* Left Column Content */}
-    <motion.div 
-      initial={{ opacity: 0, y: 25 }}
-      animate={!loading ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
-      transition={{ duration: 0.9, delay: 0.2, ease: [0.215, 0.61, 0.355, 1] }}
-      className="max-w-xl w-full flex flex-col items-start"
-    >
-      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-700 bg-slate-900/80 text-amber-400 text-xs tracking-wider uppercase mb-5 backdrop-blur-md">
-        <ShieldCheck size={14} /> Confidential & Regulated Practice
-      </div>
-      
-      <h1 className="text-3xl sm:text-5xl md:text-5xl font-bold tracking-tight text-white leading-[1.18] sm:leading-tight">
-        NestEggAssurance Delivering Trust, Transparency, & Results
-      </h1>
-      
-      <p className="mt-4 sm:mt-6 text-sm sm:text-base md:text-lg text-slate-300 max-w-md leading-relaxed">
-        Combining legal expertise, technology acumen, and a commitment to excellence, NestEggAssurance is a trusted partner for individuals and organizations navigating cyber, corporate, and general legal challenges.
-      </p>
-      
-      <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
-        <a 
-          href="#contact" 
-          className="w-full sm:w-auto px-7 py-3.5 bg-amber-600 hover:bg-amber-500 rounded-full text-white font-medium text-sm sm:text-base flex items-center justify-center gap-2 transition-all shadow-lg shadow-amber-900/30"
-        >
-          Secure Consultation
-        </a>
-        <a 
-          href="#services" 
-          className="w-full sm:w-auto px-7 py-3.5 bg-slate-900/80 hover:bg-slate-800 rounded-full text-slate-300 font-medium text-sm sm:text-base transition-all flex items-center justify-center gap-2 border border-slate-700 backdrop-blur-sm"
-        >
-          Explore Capabilities <ArrowRight size={16} />
-        </a>
-      </div>
-    </motion.div>
-  </div>
+          {/* Main Container */}
+          <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-6 w-full flex flex-col items-start justify-center">
+            {/* Left Column Content */}
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              animate={!loading ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
+              transition={{
+                duration: 0.9,
+                delay: 0.2,
+                ease: [0.215, 0.61, 0.355, 1],
+              }}
+              className="max-w-xl w-full flex flex-col items-start"
+            >
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-700 bg-slate-900/80 text-amber-400 text-xs tracking-wider uppercase mb-5 backdrop-blur-md">
+                <ShieldCheck size={14} /> Confidential & Regulated Practice
+              </div>
 
-  {/* Video Player: Polished mobile centering and margins; exact desktop corner docking preserved */}
-  <motion.div
-    initial={{ opacity: 0, scale: 0.92, y: 20 }}
-    animate={!loading ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.92, y: 20 }}
-    transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-    className="relative z-20 mt-10 md:mt-0 w-full px-5 sm:px-6 md:px-0 max-w-sm sm:max-w-md md:max-w-none md:w-80 lg:w-80 md:absolute md:bottom-20 md:right-20 mx-auto md:mx-0"
-  >
-    <div 
-      onClick={togglePlay}
-      className="group relative rounded-2xl overflow-hidden bg-slate-950/90 border border-slate-800 hover:border-amber-500/50 shadow-2xl backdrop-blur-xl transition-all duration-300 cursor-pointer p-2"
-    >
-      <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-900">
-        <video
-          ref={videoRef}
-          src="/fraud-calling.mp4" 
-          poster="/prev1.png"
-          playsInline
-          muted={isMuted}
-          onEnded={() => setIsPlaying(false)}
-          className="w-full h-full object-cover"
-        />
+              <h1 className="text-3xl sm:text-5xl md:text-5xl font-bold tracking-tight text-white leading-[1.18] sm:leading-tight">
+                NestEggAssurance Delivering Trust, Transparency, & Results
+              </h1>
 
-        <div className={`absolute inset-0 bg-slate-950/40 transition-opacity duration-300 ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`} />
+              <p className="mt-4 sm:mt-6 text-sm sm:text-base md:text-lg text-slate-300 max-w-md leading-relaxed">
+                Combining legal expertise, technology acumen, and a commitment
+                to excellence, NestEggAssurance is a trusted partner for
+                individuals and organizations navigating cyber, corporate, and
+                general legal challenges.
+              </p>
 
-        <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-slate-950/80 text-amber-400 border border-amber-500/20 backdrop-blur-sm pointer-events-none">
-          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-          Briefing
-        </div>
-
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-amber-500/90 hover:bg-amber-400 text-slate-950 flex items-center justify-center shadow-lg transition-all ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}>
-            {isPlaying ? (
-              <Pause size={16} className="fill-slate-950" />
-            ) : (
-              <Play size={16} className="fill-slate-950 ml-0.5" />
-            )}
+              <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+                <a
+                  href="#contact"
+                  className="w-full sm:w-auto px-7 py-3.5 bg-amber-600 hover:bg-amber-500 rounded-full text-white font-medium text-sm sm:text-base flex items-center justify-center gap-2 transition-all shadow-lg shadow-amber-900/30"
+                >
+                  Free Consultation
+                </a>
+                <a
+                  href="#services"
+                  className="w-full sm:w-auto px-7 py-3.5 bg-slate-900/80 hover:bg-slate-800 rounded-full text-slate-300 font-medium text-sm sm:text-base transition-all flex items-center justify-center gap-2 border border-slate-700 backdrop-blur-sm"
+                >
+                  Explore Capabilities <ArrowRight size={16} />
+                </a>
+              </div>
+            </motion.div>
           </div>
-        </div>
 
-        <button
-          type="button"
-          onClick={toggleMute}
-          className="absolute top-2.5 right-2.5 z-20 p-1.5 rounded-full bg-slate-950/70 hover:bg-slate-800 text-slate-300 hover:text-amber-400 border border-slate-700/60 backdrop-blur-sm transition-colors"
-          title={isMuted ? "Unmute" : "Mute"}
-        >
-          {isMuted ? <VolumeX size={13} /> : <Volume2 size={13} />}
-        </button>
-      </div>
+          {/* Video Player: Polished mobile centering and margins; exact desktop corner docking preserved */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92, y: 20 }}
+            animate={
+              !loading
+                ? { opacity: 1, scale: 1, y: 0 }
+                : { opacity: 0, scale: 0.92, y: 20 }
+            }
+            transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="relative z-20 mt-10 md:mt-0 w-full px-5 sm:px-6 md:px-0 max-w-sm sm:max-w-md md:max-w-none md:w-80 lg:w-80 md:absolute md:bottom-20 md:right-20 mx-auto md:mx-0"
+          >
+            <div
+              onClick={togglePlay}
+              className="group relative rounded-2xl overflow-hidden bg-slate-950/90 border border-slate-800 hover:border-amber-500/50 shadow-2xl backdrop-blur-xl transition-all duration-300 cursor-pointer p-2"
+            >
+              <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-900">
+                <video
+                  ref={videoRef}
+                  src="/fraud-calling.mp4"
+                  poster="/prev1.png"
+                  playsInline
+                  muted={isMuted}
+                  onEnded={() => setIsPlaying(false)}
+                  className="w-full h-full object-cover"
+                />
 
-      <div className="px-2 pt-2.5 pb-1 flex items-center justify-between pointer-events-none">
-        <div>
-          <p className="text-white text-xs font-bold tracking-tight">Cyber Case Briefing</p>
-          <p className="text-slate-400 text-[10px]">Asset tracing & scam defense</p>
-        </div>
-        <span className="text-[10px] font-semibold text-amber-500 border border-amber-500/30 px-2 py-0.5 rounded-md">
-          {isPlaying ? "Playing" : "Watch"}
-        </span>
-      </div>
-    </div>
-  </motion.div>
-</section>
+                <div
+                  className={`absolute inset-0 bg-slate-950/40 transition-opacity duration-300 ${isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100"}`}
+                />
+
+                <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-slate-950/80 text-amber-400 border border-amber-500/20 backdrop-blur-sm pointer-events-none">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                  Briefing
+                </div>
+
+                <div className="absolute inset-0 flex items-center justify-center z-10">
+                  <div
+                    className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-amber-500/90 hover:bg-amber-400 text-slate-950 flex items-center justify-center shadow-lg transition-all ${isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100"}`}
+                  >
+                    {isPlaying ? (
+                      <Pause size={16} className="fill-slate-950" />
+                    ) : (
+                      <Play size={16} className="fill-slate-950 ml-0.5" />
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={toggleMute}
+                  className="absolute top-2.5 right-2.5 z-20 p-1.5 rounded-full bg-slate-950/70 hover:bg-slate-800 text-slate-300 hover:text-amber-400 border border-slate-700/60 backdrop-blur-sm transition-colors"
+                  title={isMuted ? "Unmute" : "Mute"}
+                >
+                  {isMuted ? <VolumeX size={13} /> : <Volume2 size={13} />}
+                </button>
+              </div>
+
+              <div className="px-2 pt-2.5 pb-1 flex items-center justify-between pointer-events-none">
+                <div>
+                  <p className="text-white text-xs font-bold tracking-tight">
+                    Cyber Case Briefing
+                  </p>
+                  <p className="text-slate-400 text-[10px]">
+                    Asset tracing & scam defense
+                  </p>
+                </div>
+                <span className="text-[10px] font-semibold text-amber-500 border border-amber-500/30 px-2 py-0.5 rounded-md">
+                  {isPlaying ? "Playing" : "Watch"}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        </section>
 
         {/* Metrics Section with Animated Count-Up */}
         <section className="relative overflow-hidden border-y border-slate-800 bg-slate-950/80 py-20 px-6">
@@ -586,198 +665,216 @@ export default function App() {
         </section>
 
         {/* Team Section */}
-        <section id="team" className="relative py-28 px-6 bg-slate-950 overflow-hidden">
-  {/* Ambient Background Glows */}
-  <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-amber-500/5 blur-[140px] rounded-full pointer-events-none" />
-  <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-96 h-96 bg-blue-500/5 blur-[140px] rounded-full pointer-events-none" />
-
-  <div className="max-w-7xl mx-auto relative z-10">
-    {/* Section Header */}
-    <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-      <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs tracking-widest uppercase mb-4">
-          Partners & Counsel
-        </div>
-        <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
-          Practicing Leadership
-        </h2>
-      </div>
-      <p className="text-slate-400 text-sm md:text-base max-w-md leading-relaxed">
-        Cross-disciplinary advocates combining federal trial litigators, certified blockchain investigators, and forensic accountants.
-      </p>
-    </div>
-
-    {/* Team Cards Grid */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {team.map((member, idx) => (
-        <motion.div
-          key={idx}
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, margin: '-60px' }}
-          transition={{ duration: 0.6, delay: idx * 0.15 }}
-          className="group relative rounded-3xl overflow-hidden bg-slate-900 border border-slate-800/90 hover:border-amber-500/50 transition-all duration-500 shadow-2xl h-130 flex flex-col justify-end"
+        <section
+          id="team"
+          className="relative py-28 px-6 bg-slate-950 overflow-hidden"
         >
-          {/* Portrait Image with Zoom & Dark Gradient Overlay */}
-          <div className="absolute inset-0 z-0">
-            <img
-              src={member.img}
-              alt={member.name}
-              className="w-full h-full object-cover object-top filter grayscale contrast-105 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
-            />
-            {/* Cinematic Gradient Fade */}
-            <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/70 to-transparent" />
-            <div className="absolute inset-0 bg-slate-950/20 group-hover:opacity-0 transition-opacity duration-500" />
-          </div>
+          {/* Ambient Background Glows */}
+          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-amber-500/5 blur-[140px] rounded-full pointer-events-none" />
+          <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-96 h-96 bg-blue-500/5 blur-[140px] rounded-full pointer-events-none" />
 
-          {/* Top Pill Badges */}
-          <div className="absolute top-5 left-5 right-5 z-10 flex items-center justify-between pointer-events-none">
-            <span className="px-3 py-1 rounded-full text-[11px] font-semibold tracking-wider uppercase bg-slate-950/70 text-amber-300 border border-amber-500/20 backdrop-blur-md">
-              {member.experience}
-            </span>
-            <span className="px-3 py-1 rounded-full text-[11px] font-medium text-slate-300 bg-slate-950/70 border border-slate-800 backdrop-blur-md">
-              {member.bar}
-            </span>
-          </div>
-
-          {/* Content Card Body */}
-          <div className="relative z-10 p-6 sm:p-8 flex flex-col justify-end">
-            <span className="text-xs font-semibold uppercase tracking-wider text-amber-400 mb-1">
-              {member.specialty}
-            </span>
-            <h3 className="text-2xl font-bold text-white group-hover:text-amber-200 transition-colors">
-              {member.name}
-            </h3>
-            <p className="text-xs text-slate-400 font-medium mt-0.5">
-              {member.role}
-            </p>
-
-            {/* Expandable Hover Details */}
-            <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-400 ease-out">
-              <div className="overflow-hidden">
-                <p className="text-xs text-slate-300 leading-relaxed pt-3 border-t border-slate-800/80 mt-3 font-normal">
-                  {member.bio}
-                </p>
-                
-                {/* Action Contact Links */}
-                <div className="flex items-center gap-3 pt-4">
-                  <a
-                    href={`mailto:${member.email}`}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-amber-600 text-white text-xs font-medium transition-colors border border-slate-700"
-                    title="Direct Counsel Email"
-                  >
-                    <Mail size={13} /> Email
-                  </a>
-                  <a
-                    href={member.linkedin}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-amber-600 text-slate-200 hover:text-white transition-colors border border-slate-700"
-                    title="LinkedIn Profile"
-                  >
-                    <FaLinkedin size={14} />
-                  </a>
+          <div className="max-w-7xl mx-auto relative z-10">
+            {/* Section Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs tracking-widest uppercase mb-4">
+                  Partners & Counsel
                 </div>
+                <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
+                  Practicing Leadership
+                </h2>
               </div>
+              <p className="text-slate-400 text-sm md:text-base max-w-md leading-relaxed">
+                Cross-disciplinary advocates combining federal trial litigators,
+                certified blockchain investigators, and forensic accountants.
+              </p>
             </div>
 
-            {/* Subtle bottom indicator that shifts on hover */}
-            <div className="w-8 h-1 bg-amber-500/40 rounded-full mt-4 group-hover:w-full group-hover:bg-amber-500 transition-all duration-500" />
+            {/* Team Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {team.map((member, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, margin: "-60px" }}
+                  transition={{ duration: 0.6, delay: idx * 0.15 }}
+                  className="group relative rounded-3xl overflow-hidden bg-slate-900 border border-slate-800/90 hover:border-amber-500/50 transition-all duration-500 shadow-2xl h-130 flex flex-col justify-end"
+                >
+                  {/* Portrait Image with Zoom & Dark Gradient Overlay */}
+                  <div className="absolute inset-0 z-0">
+                    <img
+                      src={member.img}
+                      alt={member.name}
+                      className="w-full h-full object-cover object-top filter grayscale contrast-105 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                    />
+                    {/* Cinematic Gradient Fade */}
+                    <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/70 to-transparent" />
+                    <div className="absolute inset-0 bg-slate-950/20 group-hover:opacity-0 transition-opacity duration-500" />
+                  </div>
+
+                  {/* Top Pill Badges */}
+                  <div className="absolute top-5 left-5 right-5 z-10 flex items-center justify-between pointer-events-none">
+                    <span className="px-3 py-1 rounded-full text-[11px] font-semibold tracking-wider uppercase bg-slate-950/70 text-amber-300 border border-amber-500/20 backdrop-blur-md">
+                      {member.experience}
+                    </span>
+                    <span className="px-3 py-1 rounded-full text-[11px] font-medium text-slate-300 bg-slate-950/70 border border-slate-800 backdrop-blur-md">
+                      {member.bar}
+                    </span>
+                  </div>
+
+                  {/* Content Card Body */}
+                  <div className="relative z-10 p-6 sm:p-8 flex flex-col justify-end">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-amber-400 mb-1">
+                      {member.specialty}
+                    </span>
+                    <h3 className="text-2xl font-bold text-white group-hover:text-amber-200 transition-colors">
+                      {member.name}
+                    </h3>
+                    <p className="text-xs text-slate-400 font-medium mt-0.5">
+                      {member.role}
+                    </p>
+
+                    {/* Expandable Hover Details */}
+                    <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-400 ease-out">
+                      <div className="overflow-hidden">
+                        <p className="text-xs text-slate-300 leading-relaxed pt-3 border-t border-slate-800/80 mt-3 font-normal">
+                          {member.bio}
+                        </p>
+
+                        {/* Action Contact Links */}
+                        <div className="flex items-center gap-3 pt-4">
+                          <a
+                            href={`mailto:${member.email}`}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-amber-600 text-white text-xs font-medium transition-colors border border-slate-700"
+                            title="Direct Counsel Email"
+                          >
+                            <Mail size={13} /> Email
+                          </a>
+                          <a
+                            href={member.linkedin}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-amber-600 text-slate-200 hover:text-white transition-colors border border-slate-700"
+                            title="LinkedIn Profile"
+                          >
+                            <FaLinkedin size={14} />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Subtle bottom indicator that shifts on hover */}
+                    <div className="w-8 h-1 bg-amber-500/40 rounded-full mt-4 group-hover:w-full group-hover:bg-amber-500 transition-all duration-500" />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </motion.div>
-      ))}
-    </div>
-  </div>
-</section>
+        </section>
 
         {/* Testimonials */}
-        <section id="testimonials" className="relative py-24 sm:py-32 bg-slate-950 overflow-hidden border-t border-slate-800/80">
-  
-  {/* Ambient Lighting Gradients */}
-  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-175 h-87.5 bg-amber-500/5 blur-[160px] rounded-full pointer-events-none" />
-
-  <div className="max-w-7xl mx-auto px-5 sm:px-6 relative z-10 mb-14 text-center">
-    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs tracking-widest uppercase mb-4 backdrop-blur-md">
-      Proven Precedents
-    </div>
-    <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white font-sans">
-      Client Retrospective
-    </h2>
-    <p className="mt-4 text-sm sm:text-base text-slate-400 max-w-xl mx-auto leading-relaxed">
-      Direct feedback from enterprises, general counsels, and private investors who retained our firm for emergency remediation.
-    </p>
-  </div>
-
-  {/* Infinite Marquee Strip Container */}
-  <div className="relative w-full overflow-hidden flex items-center group">
-    
-    {/* Side Edge Fade Gradients for Seamless Infinity Look */}
-    <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-36 bg-linear-to-r from-slate-950 via-slate-950/80 to-transparent z-20 pointer-events-none" />
-    <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-36 bg-linear-to-l from-slate-950 via-slate-950/80 to-transparent z-20 pointer-events-none" />
-
-    {/* Framer Motion Infinite Track (Duplicated list for seamless zero-gap looping) */}
-    <motion.div
-      className="flex gap-6 shrink-0 py-4 cursor-grab active:cursor-grabbing"
-      animate={{
-        x: ['0%', '-50%'],
-      }}
-      transition={{
-        ease: 'linear',
-        duration: 28, // Adjust scroll speed (higher = slower, smoother)
-        repeat: Infinity,
-      }}
-      whileHover={{ transition: { duration: 0 } }} // Pauses smoothly on hover
-    >
-      {[...testimonials, ...testimonials].map((item, idx) => (
-        <div
-          key={idx}
-          className="w-85 sm:w-105 shrink-0 p-7 sm:p-8 rounded-3xl bg-slate-900/60 border border-slate-800/80 hover:border-amber-500/40 backdrop-blur-xl shadow-2xl transition-all duration-300 flex flex-col justify-between group/card hover:bg-slate-900/90"
+        <section
+          id="testimonials"
+          className="relative py-24 sm:py-32 bg-slate-950 overflow-hidden border-t border-slate-800/80"
         >
-          {/* Card Top: Rating Stars & Decorative Watermark Quote */}
-          <div>
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex gap-1 text-amber-400">
-                {[...Array(item.rating)].map((_, starIdx) => (
-                  <Star key={starIdx} size={15} fill="currentColor" strokeWidth={0} />
-                ))}
-              </div>
-              <Quote className="text-amber-500/20 group-hover/card:text-amber-500/40 transition-colors" size={28} />
+          {/* Ambient Lighting Gradients */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-175 h-87.5 bg-amber-500/5 blur-[160px] rounded-full pointer-events-none" />
+
+          <div className="max-w-7xl mx-auto px-5 sm:px-6 relative z-10 mb-14 text-center">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs tracking-widest uppercase mb-4 backdrop-blur-md">
+              Proven Precedents
             </div>
-
-            {/* Matter Badge */}
-            <span className="inline-block px-2.5 py-0.5 rounded-md text-[10px] uppercase font-semibold tracking-wider bg-slate-950 text-amber-300/90 border border-amber-500/20 mb-4">
-              {item.caseType}
-            </span>
-
-            {/* Quote Body */}
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed italic font-normal">
-              "{item.quote}"
+            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white font-sans">
+              Client Retrospective
+            </h2>
+            <p className="mt-4 text-sm sm:text-base text-slate-400 max-w-xl mx-auto leading-relaxed">
+              Direct feedback from enterprises, general counsels, and private
+              investors who retained our firm for emergency remediation.
             </p>
           </div>
 
-          {/* Card Bottom: Client Info */}
-          <div className="pt-6 mt-6 border-t border-slate-800/80 flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-1.5">
-                <h4 className="text-white text-sm font-bold tracking-tight">
-                  {item.author}
-                </h4>
-                <CheckCircle2 size={13} className="text-amber-400" />
-              </div>
-              <p className="text-slate-400 text-xs mt-0.5">{item.role}</p>
-              <p className="text-slate-500 text-[11px] font-medium mt-0.5">{item.client}</p>
-            </div>
+          {/* Infinite Marquee Strip Container */}
+          <div className="relative w-full overflow-hidden flex items-center group">
+            {/* Side Edge Fade Gradients for Seamless Infinity Look */}
+            <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-36 bg-linear-to-r from-slate-950 via-slate-950/80 to-transparent z-20 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-36 bg-linear-to-l from-slate-950 via-slate-950/80 to-transparent z-20 pointer-events-none" />
 
-            {/* Initials Badge Avatar */}
-            <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold text-xs">
-              {item.client.slice(0, 2).toUpperCase()}
-            </div>
+            {/* Framer Motion Infinite Track (Duplicated list for seamless zero-gap looping) */}
+            <motion.div
+              className="flex gap-6 shrink-0 py-4 cursor-grab active:cursor-grabbing"
+              animate={{
+                x: ["0%", "-50%"],
+              }}
+              transition={{
+                ease: "linear",
+                duration: 28, // Adjust scroll speed (higher = slower, smoother)
+                repeat: Infinity,
+              }}
+              whileHover={{ transition: { duration: 0 } }} // Pauses smoothly on hover
+            >
+              {[...testimonials, ...testimonials].map((item, idx) => (
+                <div
+                  key={idx}
+                  className="w-85 sm:w-105 shrink-0 p-7 sm:p-8 rounded-3xl bg-slate-900/60 border border-slate-800/80 hover:border-amber-500/40 backdrop-blur-xl shadow-2xl transition-all duration-300 flex flex-col justify-between group/card hover:bg-slate-900/90"
+                >
+                  {/* Card Top: Rating Stars & Decorative Watermark Quote */}
+                  <div>
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="flex gap-1 text-amber-400">
+                        {[...Array(item.rating)].map((_, starIdx) => (
+                          <Star
+                            key={starIdx}
+                            size={15}
+                            fill="currentColor"
+                            strokeWidth={0}
+                          />
+                        ))}
+                      </div>
+                      <Quote
+                        className="text-amber-500/20 group-hover/card:text-amber-500/40 transition-colors"
+                        size={28}
+                      />
+                    </div>
+
+                    {/* Matter Badge */}
+                    <span className="inline-block px-2.5 py-0.5 rounded-md text-[10px] uppercase font-semibold tracking-wider bg-slate-950 text-amber-300/90 border border-amber-500/20 mb-4">
+                      {item.caseType}
+                    </span>
+
+                    {/* Quote Body */}
+                    <p className="text-slate-300 text-sm sm:text-base leading-relaxed italic font-normal">
+                      "{item.quote}"
+                    </p>
+                  </div>
+
+                  {/* Card Bottom: Client Info */}
+                  <div className="pt-6 mt-6 border-t border-slate-800/80 flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="text-white text-sm font-bold tracking-tight">
+                          {item.author}
+                        </h4>
+                        <CheckCircle2 size={13} className="text-amber-400" />
+                      </div>
+                      <p className="text-slate-400 text-xs mt-0.5">
+                        {item.role}
+                      </p>
+                      <p className="text-slate-500 text-[11px] font-medium mt-0.5">
+                        {item.client}
+                      </p>
+                    </div>
+
+                    {/* Initials Badge Avatar */}
+                    <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold text-xs">
+                      {item.client.slice(0, 2).toUpperCase()}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
           </div>
-        </div>
-      ))}
-    </motion.div>
-  </div>
-</section>
+        </section>
 
         {/* Contact Section */}
         <section id="contact" className="py-24 px-6 max-w-4xl mx-auto">
@@ -789,58 +886,87 @@ export default function App() {
               Initiate Case Assessment
             </h2>
           </div>
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900 p-8 rounded-2xl border border-slate-800"
-          >
-            <div className="space-y-2">
-              <label className="text-xs uppercase text-slate-400 font-medium">
-                Full Legal Name
-              </label>
-              <input
-                type="text"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs uppercase text-slate-400 font-medium">
-                Contact Email
-              </label>
-              <input
-                type="email"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
-                required
-              />
-            </div>
-            <div className="md:col-span-2 space-y-2">
-              <label className="text-xs uppercase text-slate-400 font-medium">
-                Subject / Case Category
-              </label>
-              <select className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none">
-                <option>Frozen Bank Account</option>
-                <option>Digital/Crypto/Scam Asset Recovery</option>
-                <option>Cyber Incident Legal Retainer</option>
-                <option>Corporate Investigation / Due Diligence</option>
-              </select>
-            </div>
-            <div className="md:col-span-2 space-y-2">
-              <label className="text-xs uppercase text-slate-400 font-medium">
-                Brief Matter Summary (Confidential)
-              </label>
-              <textarea
-                rows={4}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="md:col-span-2 w-full py-3.5 bg-amber-600 hover:bg-amber-500 rounded-lg text-white font-medium text-sm transition-all shadow-lg shadow-amber-900/30"
-            >
-              Submit Case for Priority Review
-            </button>
-          </form>
+         <form
+  onSubmit={handleContactSubmit}
+  className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900 p-8 rounded-2xl border border-slate-800"
+>
+  <div className="space-y-2">
+    <label className="text-xs uppercase text-slate-400 font-medium">Full Legal Name</label>
+    <input
+      type="text"
+      name="name"
+      value={formData.name}
+      onChange={handleChange}
+      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
+      required
+    />
+  </div>
+
+  <div className="space-y-2">
+    <label className="text-xs uppercase text-slate-400 font-medium">Contact Email</label>
+    <input
+      type="email"
+      name="email"
+      value={formData.email}
+      onChange={handleChange}
+      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
+      required
+    />
+  </div>
+
+  <div className="md:col-span-2 space-y-2">
+    <label className="text-xs uppercase text-slate-400 font-medium">Subject / Case Category</label>
+    <select
+      name="category"
+      value={formData.category}
+      onChange={handleChange}
+      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
+    >
+      <option value="Frozen Bank Account">Frozen Bank Account</option>
+      <option value="Digital/Crypto/Scam Asset Recovery">Digital/Crypto/Scam Asset Recovery</option>
+      <option value="Cyber Incident Legal Retainer">Cyber Incident Legal Retainer</option>
+      <option value="Corporate Investigation / Due Diligence">Corporate Investigation / Due Diligence</option>
+    </select>
+  </div>
+
+  <div className="md:col-span-2 space-y-2">
+    <label className="text-xs uppercase text-slate-400 font-medium">Brief Matter Summary (Confidential)</label>
+    <textarea
+      rows={4}
+      name="message"
+      value={formData.message}
+      onChange={handleChange}
+      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
+      required
+    />
+  </div>
+
+  <button
+    type="submit"
+    disabled={submitting}
+    className="md:col-span-2 w-full py-3.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-white font-medium text-sm transition-all shadow-lg shadow-amber-900/30 flex items-center justify-center gap-2"
+  >
+    {submitting ? (
+      <>
+        <Loader2 className="animate-spin" size={18} /> Transmitting Matter...
+      </>
+    ) : (
+      "Submit Case for Priority Review"
+    )}
+  </button>
+
+  {submitStatus === "success" && (
+    <div className="md:col-span-2 p-3 bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 rounded-lg text-sm flex items-center gap-2">
+      <Check size={16} /> Case submitted. Our lead counsel will contact you via encrypted channels.
+    </div>
+  )}
+
+  {submitStatus === "error" && (
+    <div className="md:col-span-2 p-3 bg-red-950/60 border border-red-500/30 text-red-400 rounded-lg text-sm">
+      Failed to transmit inquiry. Please email our office directly or try again shortly.
+    </div>
+  )}
+</form>
           <FloatingActions />
         </section>
 
