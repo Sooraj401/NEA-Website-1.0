@@ -31,6 +31,7 @@ import {
   CheckCircle2,
   Check,
   Loader2,
+  AlertCircle,
 } from "lucide-react";
 import FloatingActions from "./components/FloatingActions";
 import PageLoader from "./components/PageLoader";
@@ -215,59 +216,70 @@ export default function App() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-const handleContactSubmit = async (e) => {
-  e.preventDefault();
-  setSubmitting(true);
-  setSubmitStatus(null);
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setSubmitStatus(null);
 
-  // 1. Resolve the category properly
-  const resolvedCategory =
-    formData.category === "Other"
-      ? (formData.customCategory || "").trim() || "Unspecified / Other"
-      : formData.category;
+    const resolvedCategory =
+      formData.category === "Other"
+        ? (formData.customCategory || "").trim() || "Unspecified / Other"
+        : formData.category;
 
-  const payloadToSend = {
-    name: formData.name.trim(),
-    email: formData.email.trim(),
-    phone: formData.phone.trim(),
-    category: resolvedCategory,
-    customCategory: formData.customCategory.trim(),
-    message: formData.message.trim(),
-  };
+    const payloadToSend = {
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      category: resolvedCategory,
+      customCategory: formData.customCategory.trim(),
+      message: formData.message.trim(),
+    };
 
-  try {
-    // 2. Use pure relative path to prevent protocol/subdomain 308 drop
-    const res = await fetch("/api/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      body: JSON.stringify(payloadToSend),
-    });
-
-    const data = await res.json().catch(() => ({}));
-
-    if (res.ok && data.success) {
-      setSubmitStatus("success");
-      setFormData({
-        name: "",
-        email: "",
-        category: "Frozen Bank Account",
-        customCategory: "",
-        phone: "",
-        message: "",
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payloadToSend),
       });
-    } else {
-      // 3. Show actual error message returned from backend
-      setSubmitStatus(data.message || `Server Error (${res.status})`);
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.success) {
+        setSubmitStatus({
+          type: "success",
+          message:
+            "Case submitted successfully. Our lead counsel will contact you shortly.",
+        });
+        setFormData({
+          name: "",
+          email: "",
+          category: "Frozen Bank Account",
+          customCategory: "",
+          phone: "",
+          message: "",
+        });
+      } else {
+        setSubmitStatus({
+          type: "error",
+          message:
+            data.message ||
+            `Submission failed (${res.status}). Please try again.`,
+        });
+      }
+    } catch (err) {
+      setSubmitStatus({
+        type: "error",
+        message:
+          err.message ||
+          "Network error. Please check your connection and retry.",
+      });
+    } finally {
+      setSubmitting(false);
     }
-  } catch (err) {
-    setSubmitStatus(err.message || "Network error. Please try again.");
-  } finally {
-    setSubmitting(false);
-  }
-};
+  };
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -1051,16 +1063,22 @@ const handleContactSubmit = async (e) => {
               )}
             </button>
 
-            {submitStatus && submitStatus !== "success" && (
-              <div className="md:col-span-2 p-3 bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 rounded-lg text-sm flex items-center gap-2">
-                {submitStatus}
+            {/* Success Feedback */}
+            {submitStatus?.type === "success" && (
+              <div className="md:col-span-2 p-4 bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 rounded-lg text-sm flex items-start gap-3">
+                <Check size={18} className="text-emerald-400 mt-0.5 shrink-0" />
+                <span>{submitStatus.message}</span>
               </div>
             )}
 
-            {submitStatus === "error" && (
-              <div className="md:col-span-2 p-3 bg-red-950/60 border border-red-500/30 text-red-400 rounded-lg text-sm">
-                Failed to transmit inquiry. Please email our office directly or
-                try again shortly.
+            {/* Error Feedback */}
+            {submitStatus?.type === "error" && (
+              <div className="md:col-span-2 p-4 bg-red-950/70 border border-red-500/40 text-red-300 rounded-lg text-sm flex items-start gap-3">
+                <AlertCircle
+                  size={18}
+                  className="text-red-400 mt-0.5 shrink-0"
+                />
+                <span>{submitStatus.message}</span>
               </div>
             )}
           </form>
