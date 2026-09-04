@@ -221,7 +221,10 @@ export default function App() {
     setSubmitStatus(null);
 
     try {
-      const res = await fetch("/api/contact", {
+
+      const endpoint = `${window.location.origin}/api/contact`;
+
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

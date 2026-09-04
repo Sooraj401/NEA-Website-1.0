@@ -20,6 +20,9 @@ export default async function handler(req, res) {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS, // App password if using Gmail
     },
+     connectionTimeout: 8000, 
+     greetingTimeout: 8000,
+     socketTimeout: 8000,
   });
 
   // Minimal, high-end branded HTML email template
