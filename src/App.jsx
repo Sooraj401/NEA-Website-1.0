@@ -46,6 +46,7 @@ import {
   FaInstagram,
   FaFacebookF,
 } from "react-icons/fa";
+import { FaX, FaXTwitter } from "react-icons/fa6";
 
 // Clean numeric targets paired with their display suffixes
 const stats = [
@@ -102,21 +103,21 @@ const team = [
   },
   {
     name: "Shinju K S",
-    role: "Head of Cyber & Digital Assets",
-    specialty: "Ransomware Shield & Crypto Forensics",
-    experience: "5+ Yrs Exp",
-    bar: "Certified Forensic Legal Specialist",
+    role: "Cyber Security Operations Manager",
+    specialty: "M. Sc Homeland Security",
+    experience: "2+ Yrs Exp",
+    bar: "Cyber Security Operations Manager",
     img: "/security-analyst.jpeg",
     bio: "Pioneered rapid blockchain address freeze petitions across 14 jurisdictions and sovereign cyber defense compliance frameworks.",
     linkedin: "#",
     email: "e.rostova@nealegal.com",
   },
   {
-    name: "Ebin Johny",
-    role: "Advocate",
-    specialty: "Corporate Espionage & Anti-Fraud",
-    experience: "15+ Yrs Exp",
-    bar: "ACFE Certified Examiner",
+    name: "Adv. Ebin Johny",
+    role: "Legal Advisor",
+    specialty: "LLB/Diploma in Cyber Law",
+    experience: "4+ Yrs Exp",
+    bar: "Legal Advisor",
     img: "/lawyer.jpeg",
     bio: "Cyber Law Consultant specializing in digital forensics advisory, cybercrime regulatory compliance, and technology law.",
     linkedin: "#",
@@ -1130,7 +1131,7 @@ export default function App() {
                 <div className="flex items-center gap-2.5 pt-2">
                   {[
                     { icon: FaLinkedinIn, href: "#", label: "LinkedIn" },
-                    { icon: FaTwitter, href: "#", label: "Twitter" },
+                    { icon: FaXTwitter, href: "https://x.com/xvimalkumarm?s=21", label: "X" },
                     {
                       icon: FaInstagram,
                       href: "https://www.instagram.com/nesteggassurance?igsi=MWZuZjRpdnRsYnN1bQ%3D%3D&utm_source=qr",
@@ -1216,9 +1217,9 @@ export default function App() {
                       className="text-amber-500 mt-0.5 shrink-0"
                     />
                     <span className="leading-snug text-slate-300">
-                      Level 14, Tower B, Financial District,
+                      No:126 Sharatha building
                       <br />
-                      Cyber Hub, India
+                      Thanisandra bangalore-karnataka-india -560077
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
