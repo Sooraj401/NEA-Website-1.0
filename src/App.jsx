@@ -32,10 +32,20 @@ import {
   Check,
   Loader2,
   AlertCircle,
+  Shield,
+  Phone,
+  MapPin,
+  ArrowUpRight,
 } from "lucide-react";
 import FloatingActions from "./components/FloatingActions";
 import PageLoader from "./components/PageLoader";
-import { FaLinkedin, FaLinkedinIn } from "react-icons/fa";
+import {
+  FaLinkedin,
+  FaLinkedinIn,
+  FaTwitter,
+  FaInstagram,
+  FaFacebookF,
+} from "react-icons/fa";
 
 // Clean numeric targets paired with their display suffixes
 const stats = [
@@ -1087,23 +1097,170 @@ export default function App() {
         </section>
 
         {/* Footer */}
-        <footer className="border-t border-slate-800 bg-slate-950 py-12 px-6">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-xs text-slate-500">
-              © {new Date().getFullYear()} NEA Legal Solutions. All rights
-              reserved. Communications are protected under standard
-              attorney-client privilege.
-            </p>
-            <div className="flex gap-6 text-xs text-slate-400">
-              <a href="#" className="hover:text-amber-500">
-                Privacy Policy
-              </a>
-              <a href="#" className="hover:text-amber-500">
-                Terms of Representation
-              </a>
-              <a href="#" className="hover:text-amber-500">
-                Regulatory Disclosures
-              </a>
+        <footer className="relative border-t border-slate-800/80 bg-slate-950 text-slate-400 overflow-hidden">
+          {/* Ambient Background Glow */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-amber-500/5 blur-[120px] rounded-full pointer-events-none" />
+
+          <div className="relative max-w-7xl mx-auto px-6 pt-16 pb-12">
+            {/* Main Grid: 4-Column Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-14 border-b border-slate-800/80">
+              {/* Brand Profile & Socials */}
+              <div className="lg:col-span-2 space-y-5">
+                <div className="flex items-center gap-3">
+                  <img
+                    src="/logo.png"
+                    alt="NestEggAssurance"
+                    className="h-10 w-auto object-contain"
+                  />
+                </div>
+
+                <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
+                  Specialized counsel combining forensic asset recovery, cyber
+                  litigation, and institutional regulatory defense. Defending
+                  capital integrity globally.
+                </p>
+
+                {/* Status indicator */}
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/50 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Rapid Response Desk Active
+                </div>
+
+                {/* Social Icons */}
+                <div className="flex items-center gap-2.5 pt-2">
+                  {[
+                    { icon: FaLinkedinIn, href: "#", label: "LinkedIn" },
+                    { icon: FaTwitter, href: "#", label: "Twitter" },
+                    {
+                      icon: FaInstagram,
+                      href: "https://www.instagram.com/nesteggassurance?igsi=MWZuZjRpdnRsYnN1bQ%3D%3D&utm_source=qr",
+                      label: "Instagram",
+                    },
+                    { icon: FaFacebookF, href: "#", label: "Facebook" },
+                  ].map((item, i) => (
+                    <a
+                      key={i}
+                      href={item.href}
+                      aria-label={item.label}
+                      className="w-9 h-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-amber-400 hover:border-amber-500/40 hover:bg-slate-800/80 transition-all duration-200 shadow-sm"
+                    >
+                      <item.icon size={14} />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* Navigation Links */}
+              <div>
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
+                  Quick Links
+                </h4>
+                <ul className="space-y-2.5 text-sm">
+                  {[
+                    { label: "Firm Profile", href: "#about" },
+                    { label: "Practice Areas", href: "#services" },
+                    { label: "Leadership Team", href: "#team" },
+                    { label: "Client Retrospective", href: "#testimonials" },
+                    { label: "Schedule Consultation", href: "#contact" },
+                  ].map((link, i) => (
+                    <li key={i}>
+                      <a
+                        href={link.href}
+                        className="hover:text-amber-400 transition-colors inline-flex items-center gap-1 group"
+                      >
+                        <span>{link.label}</span>
+                        <ArrowUpRight
+                          size={12}
+                          className="opacity-0 -translate-y-0.5 translate-x-0.5 group-hover:opacity-100 transition-all"
+                        />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Core Practice Areas */}
+              <div>
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
+                  Practice Areas
+                </h4>
+                <ul className="space-y-2.5 text-sm">
+                  {[
+                    "Account Unfreezing",
+                    "Asset & Scam Recovery",
+                    "Crypto Forensics",
+                    "Corporate Due Diligence",
+                    "Incident Response Retainer",
+                  ].map((service, i) => (
+                    <li key={i}>
+                      <a
+                        href="#services"
+                        className="hover:text-amber-400 transition-colors block"
+                      >
+                        {service}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Office & Direct Contact */}
+              <div>
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
+                  Headquarters
+                </h4>
+                <ul className="space-y-3.5 text-sm">
+                  <li className="flex items-start gap-3">
+                    <MapPin
+                      size={16}
+                      className="text-amber-500 mt-0.5 shrink-0"
+                    />
+                    <span className="leading-snug text-slate-300">
+                      Level 14, Tower B, Financial District,
+                      <br />
+                      Cyber Hub, India
+                    </span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Phone size={15} className="text-amber-500 shrink-0" />
+                    <a
+                      href="tel:+919482124220"
+                      className="hover:text-amber-400 text-slate-300 transition-colors"
+                    >
+                      +91 9482124220
+                    </a>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Mail size={15} className="text-amber-500 shrink-0" />
+                    <a
+                      href="mailto:support@nesteggassurance.in"
+                      className="hover:text-amber-400 text-slate-300 transition-colors"
+                    >
+                      support@nesteggassurance.in
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Bottom Legal Notice & Copyright */}
+            <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+              <p className="text-slate-500 text-center sm:text-left">
+                © {new Date().getFullYear()} NestEggAssurance (NEA Legal
+                Solutions). All rights reserved. Attorney-Client Privileged.
+              </p>
+
+              <div className="flex flex-wrap justify-center gap-6 text-slate-400">
+                <a href="#" className="hover:text-amber-400 transition-colors">
+                  Privacy Policy
+                </a>
+                <a href="#" className="hover:text-amber-400 transition-colors">
+                  Terms of Representation
+                </a>
+                <a href="#" className="hover:text-amber-400 transition-colors">
+                  Regulatory Disclosures
+                </a>
+              </div>
             </div>
           </div>
         </footer>
