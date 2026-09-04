@@ -29,7 +29,8 @@ import {
   VolumeX,
   Quote,
   CheckCircle2,
-  Check, Loader2
+  Check,
+  Loader2,
 } from "lucide-react";
 import FloatingActions from "./components/FloatingActions";
 import PageLoader from "./components/PageLoader";
@@ -192,48 +193,60 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = React.useRef(null);
   const [formData, setFormData] = useState({
-  name: "",
-  email: "",
-  category: "Frozen Bank Account",
-  message: "",
-});
-const [submitting, setSubmitting] = useState(false);
-const [submitStatus, setSubmitStatus] = useState(null);
+    name: "",
+    email: "",
+    category: "Frozen Bank Account",
+    customCategory: "",
+    phone: "",
+    message: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
 
-const handleChange = (e) => {
-  setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-};
+  const payLoad = {
+    ...formData,
+    category:
+      formData.category === "Other"
+        ? formData.customCategory
+        : formData.category,
+  };
 
-const handleContactSubmit = async (e) => {
-  e.preventDefault();
-  setSubmitting(true);
-  setSubmitStatus(null);
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
-  try {
-    const res = await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setSubmitStatus(null);
 
-    const data = await res.json();
-    if (res.ok) {
-      setSubmitStatus("success");
-      setFormData({
-        name: "",
-        email: "",
-        category: "Frozen Bank Account",
-        message: "",
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
-    } else {
+
+      const data = await res.json();
+      if (res.ok) {
+        setSubmitStatus("success");
+        setFormData({
+          name: "",
+          email: "",
+          category: "Frozen Bank Account",
+          customCategory: "",
+          phone: "",
+          message: "",
+        });
+      } else {
+        setSubmitStatus("error");
+      }
+    } catch (err) {
       setSubmitStatus("error");
+    } finally {
+      setSubmitting(false);
     }
-  } catch (err) {
-    setSubmitStatus("error");
-  } finally {
-    setSubmitting(false);
-  }
-};
+  };
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -258,7 +271,6 @@ const handleContactSubmit = async (e) => {
   const handleNavClick = (e, targetId) => {
     e.preventDefault();
     setMobileMenuOpen(false);
-
 
     // Allow menu exit animation to start, then smoothly scroll to target section
     setTimeout(() => {
@@ -886,87 +898,153 @@ const handleContactSubmit = async (e) => {
               Initiate Case Assessment
             </h2>
           </div>
-         <form
-  onSubmit={handleContactSubmit}
-  className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900 p-8 rounded-2xl border border-slate-800"
->
-  <div className="space-y-2">
-    <label className="text-xs uppercase text-slate-400 font-medium">Full Legal Name</label>
-    <input
-      type="text"
-      name="name"
-      value={formData.name}
-      onChange={handleChange}
-      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
-      required
-    />
-  </div>
 
-  <div className="space-y-2">
-    <label className="text-xs uppercase text-slate-400 font-medium">Contact Email</label>
-    <input
-      type="email"
-      name="email"
-      value={formData.email}
-      onChange={handleChange}
-      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
-      required
-    />
-  </div>
+          <form
+            onSubmit={handleContactSubmit}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900 p-8 rounded-2xl border border-slate-800"
+          >
+            {/* Full Name */}
+            <div className="space-y-2">
+              <label className="text-xs uppercase text-slate-400 font-medium">
+                Full Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
+                required
+              />
+            </div>
 
-  <div className="md:col-span-2 space-y-2">
-    <label className="text-xs uppercase text-slate-400 font-medium">Subject / Case Category</label>
-    <select
-      name="category"
-      value={formData.category}
-      onChange={handleChange}
-      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
-    >
-      <option value="Frozen Bank Account">Frozen Bank Account</option>
-      <option value="Digital/Crypto/Scam Asset Recovery">Digital/Crypto/Scam Asset Recovery</option>
-      <option value="Cyber Incident Legal Retainer">Cyber Incident Legal Retainer</option>
-      <option value="Corporate Investigation / Due Diligence">Corporate Investigation / Due Diligence</option>
-    </select>
-  </div>
+            {/* Email */}
+            <div className="space-y-2">
+              <label className="text-xs uppercase text-slate-400 font-medium">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
+                required
+              />
+            </div>
 
-  <div className="md:col-span-2 space-y-2">
-    <label className="text-xs uppercase text-slate-400 font-medium">Brief Matter Summary (Confidential)</label>
-    <textarea
-      rows={4}
-      name="message"
-      value={formData.message}
-      onChange={handleChange}
-      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
-      required
-    />
-  </div>
+            {/* Contact Number */}
+            <div className="space-y-2">
+              <label className="text-xs uppercase text-slate-400 font-medium">
+                Contact Number
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
+                required
+              />
+            </div>
 
-  <button
-    type="submit"
-    disabled={submitting}
-    className="md:col-span-2 w-full py-3.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-white font-medium text-sm transition-all shadow-lg shadow-amber-900/30 flex items-center justify-center gap-2"
-  >
-    {submitting ? (
-      <>
-        <Loader2 className="animate-spin" size={18} /> Transmitting Matter...
-      </>
-    ) : (
-      "Submit Case for Priority Review"
-    )}
-  </button>
+            {/* Subject / Case Category */}
+            <div className="space-y-2">
+              <label className="text-xs uppercase text-slate-400 font-medium">
+                Subject / Case Category
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
+              >
+                <option value="Frozen Bank Account">Frozen Bank Account</option>
+                <option value="Digital/Crypto/Scam Asset Recovery">
+                  Digital/Crypto/Scam Asset Recovery
+                </option>
+                <option value="Cyber Incident Legal Retainer">
+                  Cyber Incident Legal Retainer
+                </option>
+                <option value="Corporate Investigation / Due Diligence">
+                  Corporate Investigation / Due Diligence
+                </option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
 
-  {submitStatus === "success" && (
-    <div className="md:col-span-2 p-3 bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 rounded-lg text-sm flex items-center gap-2">
-      <Check size={16} /> Case submitted. Our lead counsel will contact you via encrypted channels.
-    </div>
-  )}
+            {/* Conditionally Revealed "Other" Category Input */}
+            <AnimatePresence>
+              {formData.category === "Other" && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="md:col-span-2 space-y-2 overflow-hidden"
+                >
+                  <label className="text-xs uppercase text-slate-400 font-medium">
+                    Please Specify Case Category
+                  </label>
+                  <input
+                    type="text"
+                    name="customCategory"
+                    placeholder="e.g. Identity Theft, Defamation, IP Dispute"
+                    value={formData.customCategory}
+                    onChange={handleChange}
+                    className="w-full bg-slate-950 border border-amber-500/50 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
+                    required={formData.category === "Other"}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-  {submitStatus === "error" && (
-    <div className="md:col-span-2 p-3 bg-red-950/60 border border-red-500/30 text-red-400 rounded-lg text-sm">
-      Failed to transmit inquiry. Please email our office directly or try again shortly.
-    </div>
-  )}
-</form>
+            {/* Matter Description */}
+            <div className="md:col-span-2 space-y-2">
+              <label className="text-xs uppercase text-slate-400 font-medium">
+                Matter
+              </label>
+              <textarea
+                rows={4}
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-100 text-sm focus:border-amber-500 focus:outline-none"
+                required
+              />
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={submitting}
+              className="md:col-span-2 w-full py-3.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-white font-medium text-sm transition-all shadow-lg shadow-amber-900/30 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="animate-spin" size={18} /> Transmitting
+                  Matter...
+                </>
+              ) : (
+                "Submit Case for Priority Review"
+              )}
+            </button>
+
+            {submitStatus === "success" && (
+              <div className="md:col-span-2 p-3 bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 rounded-lg text-sm flex items-center gap-2">
+                <Check size={16} /> Case submitted. Our lead counsel will
+                contact you via encrypted channels.
+              </div>
+            )}
+
+            {submitStatus === "error" && (
+              <div className="md:col-span-2 p-3 bg-red-950/60 border border-red-500/30 text-red-400 rounded-lg text-sm">
+                Failed to transmit inquiry. Please email our office directly or
+                try again shortly.
+              </div>
+            )}
+          </form>
+
           <FloatingActions />
         </section>
 
