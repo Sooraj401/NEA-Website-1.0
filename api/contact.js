@@ -11,39 +11,24 @@ export default async function handler(req, res) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
-  const userEmail = process.env.HOSTINGER_EMAIL || '';
-  // Clean app password in case dashes or spaces were copied
-  const rawPass = process.env.HOSTINGER_PASSWORD || '';
-  const cleanPass = rawPass.replace(/[\s-]/g, '');
+  // Configure transporter (SMTP credentials from environment variables)
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '465'),
+    secure: true, // true for 465, false for 587
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS, // App password if using Gmail
+    },
+  });
 
-  const isGmail = userEmail.endsWith('@gmail.com');
-
-  // Dynamic configuration based on whether you're using Gmail or Hostinger
-  const transporter = nodemailer.createTransport(
-    isGmail
-      ? {
-          service: 'gmail',
-          auth: {
-            user: userEmail,
-            pass: cleanPass, // 16-character Google App Password
-          },
-        }
-      : {
-          host: 'smtp.hostinger.com',
-          port: 465,
-          secure: true,
-          auth: {
-            user: userEmail,
-            pass: rawPass,
-          },
-        }
-  );
-
+  // Minimal, high-end branded HTML email template
   const htmlTemplate = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
       <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>New Intake Matter</title>
       <style>
         body { margin: 0; padding: 0; background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
@@ -91,7 +76,7 @@ export default async function handler(req, res) {
           </div>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} NestEggAssurance. Automated Intake Dispatch.</p>
+          <p>© ${new Date().getFullYear()} NestEggAssurance (NEA Legal Solutions). Automated Dispatch.</p>
         </div>
       </div>
     </body>
@@ -100,17 +85,16 @@ export default async function handler(req, res) {
 
   try {
     await transporter.sendMail({
-      // Must be identical to the authenticating user email on Hostinger
-      from: `"NestEggAssurance Intake" <${process.env.HOSTINGER_EMAIL}>`,
-      to: process.env.COMPANY_RECEIVE_EMAIL || process.env.HOSTINGER_EMAIL,
-      replyTo: email, // Reply directly to the client's submitted email
+      from: `"NEA Intake" <${process.env.SMTP_USER}>`,
+      to: process.env.COMPANY_EMAIL || process.env.SMTP_USER,
+      replyTo: email,
       subject: `[Confidential Intake] ${category} - ${name}`,
       html: htmlTemplate,
     });
 
     return res.status(200).json({ success: true, message: 'Message sent successfully.' });
   } catch (error) {
-    console.error('Hostinger Mail dispatch error:', error);
+    console.error('Mail delivery failed:', error);
     return res.status(500).json({ success: false, message: 'Failed to dispatch email.' });
   }
 }
