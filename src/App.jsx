@@ -215,41 +215,59 @@ export default function App() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleContactSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setSubmitStatus(null);
+const handleContactSubmit = async (e) => {
+  e.preventDefault();
+  setSubmitting(true);
+  setSubmitStatus(null);
 
-    try {
+  // 1. Resolve the category properly
+  const resolvedCategory =
+    formData.category === "Other"
+      ? (formData.customCategory || "").trim() || "Unspecified / Other"
+      : formData.category;
 
-      const endpoint = `${window.location.origin}/api/contact`;
-
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        setSubmitStatus("success");
-        setFormData({
-          name: "",
-          email: "",
-          category: "Frozen Bank Account",
-          customCategory: "",
-          phone: "",
-          message: "",
-        });
-      } else {
-        setSubmitStatus("error");
-      }
-    } catch (err) {
-      setSubmitStatus("error");
-    } finally {
-      setSubmitting(false);
-    }
+  const payloadToSend = {
+    name: formData.name.trim(),
+    email: formData.email.trim(),
+    phone: formData.phone.trim(),
+    category: resolvedCategory,
+    customCategory: formData.customCategory.trim(),
+    message: formData.message.trim(),
   };
+
+  try {
+    // 2. Use pure relative path to prevent protocol/subdomain 308 drop
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify(payloadToSend),
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (res.ok && data.success) {
+      setSubmitStatus("success");
+      setFormData({
+        name: "",
+        email: "",
+        category: "Frozen Bank Account",
+        customCategory: "",
+        phone: "",
+        message: "",
+      });
+    } else {
+      // 3. Show actual error message returned from backend
+      setSubmitStatus(data.message || `Server Error (${res.status})`);
+    }
+  } catch (err) {
+    setSubmitStatus(err.message || "Network error. Please try again.");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -1033,10 +1051,9 @@ export default function App() {
               )}
             </button>
 
-            {submitStatus === "success" && (
+            {submitStatus && submitStatus !== "success" && (
               <div className="md:col-span-2 p-3 bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 rounded-lg text-sm flex items-center gap-2">
-                <Check size={16} /> Case submitted. Our lead counsel will
-                contact you via encrypted channels.
+                {submitStatus}
               </div>
             )}
 

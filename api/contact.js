@@ -1,90 +1,86 @@
 import nodemailer from 'nodemailer';
 
 export default async function handler(req, res) {
+  // Ensure CORS and options request handling if mobile sends preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method Not Allowed' });
+    return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
 
-  const { name, email, category, message, phone, customCategory } = req.body;
-
-  if (!name || !email || !message || !category || !phone) {
-    return res.status(400).json({ message: 'Missing required fields' });
+  // Fallback body parser in case the payload was parsed as string
+  let body = req.body;
+  if (typeof body === 'string') {
+    try {
+      body = JSON.parse(body);
+    } catch {
+      return res.status(400).json({ success: false, message: 'Malformed JSON payload' });
+    }
   }
 
-  // Configure transporter (SMTP credentials from environment variables)
+  const { name, email, category, message, phone, customCategory } = body || {};
+
+  // Check required fields with trim
+  if (!name?.trim() || !email?.trim() || !message?.trim() || !phone?.trim()) {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Please fill in all required fields (Name, Email, Phone, Matter).' 
+    });
+  }
+
+  const finalCategory = 
+    category === 'Other' || !category 
+      ? (customCategory || 'General Inquiry') 
+      : category;
+
+  // Determine host and user safely
+  const smtpUser = process.env.SMTP_USER || process.env.HOSTINGER_EMAIL || '';
+  const smtpPass = (process.env.SMTP_PASS || process.env.HOSTINGER_PASSWORD || '').replace(/[\s-]/g, '');
+  const smtpHost = process.env.SMTP_HOST || (smtpUser.endsWith('@gmail.com') ? 'smtp.gmail.com' : 'smtp.hostinger.com');
+  const smtpPort = parseInt(process.env.SMTP_PORT || '465', 10);
+
   const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '465'),
-    secure: true, // true for 465, false for 587
+    host: smtpHost,
+    port: smtpPort,
+    secure: smtpPort === 465,
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS, // App password if using Gmail
+      user: smtpUser,
+      pass: smtpPass,
     },
-     connectionTimeout: 8000, 
-     greetingTimeout: 8000,
-     socketTimeout: 8000,
+    connectionTimeout: 10000, 
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
   });
 
-  // Minimal, high-end branded HTML email template
   const htmlTemplate = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
       <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>New Intake Matter</title>
       <style>
-        body { margin: 0; padding: 0; background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        .wrapper { max-width: 600px; margin: 40px auto; background-color: #0f172a; border-radius: 16px; border: 1px solid #1e293b; overflow: hidden; }
-        .header { padding: 32px; border-bottom: 1px solid #1e293b; text-align: left; }
-        .badge { display: inline-block; padding: 4px 10px; background-color: rgba(217, 119, 6, 0.15); border: 1px solid rgba(217, 119, 6, 0.3); color: #f59e0b; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-        .title { color: #ffffff; font-size: 20px; font-weight: 700; margin: 16px 0 0 0; }
-        .body { padding: 32px; color: #cbd5e1; }
-        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
-        .data-table td { padding: 12px 0; border-bottom: 1px solid #1e293b; font-size: 14px; }
-        .data-label { color: #94a3b8; width: 140px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; font-weight: 600; }
-        .data-value { color: #f8fafc; font-weight: 500; }
-        .data-value a { color: #d97706; text-decoration: none; }
-        .message-box { background-color: #070b14; border: 1px solid #1e293b; border-radius: 12px; padding: 20px; margin-top: 10px; }
-        .message-text { color: #e2e8f0; font-size: 14px; line-height: 1.6; white-space: pre-wrap; margin: 0; }
-        .footer { padding: 24px 32px; background-color: #070b14; border-top: 1px solid #1e293b; text-align: center; }
-        .footer p { color: #64748b; font-size: 12px; margin: 0; }
+        body { margin: 0; padding: 0; background-color: #0b0f19; font-family: sans-serif; }
+        .wrapper { max-width: 600px; margin: 20px auto; background-color: #0f172a; border-radius: 12px; border: 1px solid #1e293b; overflow: hidden; padding: 24px; color: #cbd5e1; }
+        .title { color: #f59e0b; font-size: 18px; margin-bottom: 16px; font-weight: bold; }
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .data-table td { padding: 8px 0; border-bottom: 1px solid #1e293b; font-size: 14px; }
+        .label { color: #94a3b8; width: 130px; font-size: 12px; text-transform: uppercase; }
+        .val { color: #fff; font-weight: 500; }
+        .msg { background-color: #070b14; border: 1px solid #1e293b; border-radius: 8px; padding: 14px; color: #e2e8f0; font-size: 14px; line-height: 1.5; white-space: pre-wrap; }
       </style>
     </head>
     <body>
       <div class="wrapper">
-        <div class="header">
-          <span class="badge">Privileged & Confidential Intake</span>
-          <h1 class="title">New Case Assessment Inquiry</h1>
-        </div>
-        <div class="body">
-          <table class="data-table">
-            <tr>
-              <td class="data-label">Full Name</td>
-              <td class="data-value">${name}</td>
-            </tr>
-            <tr>
-              <td class="data-label">Contact Email</td>
-              <td class="data-value"><a href="mailto:${email}">${email}</a></td>
-            </tr>
-            <tr>
-              <td class="data-label">Matter Category</td>
-              <td class="data-value"><span style="color: #fbbf24; font-weight: 600;">${category || customCategory || 'General Counsel'}</span></td>
-            </tr>
-            <tr>
-              <td class="data-label">Phone Number</td>
-              <td class="data-value">${phone}</td>
-            </tr>
-          </table>
-
-          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; font-weight: 600; margin-bottom: 6px;">Matter Summary</div>
-          <div class="message-box">
-            <p class="message-text">${message}</p>
-          </div>
-        </div>
-        <div class="footer">
-          <p>© ${new Date().getFullYear()} NestEggAssurance (NEA Legal Solutions). Automated Dispatch.</p>
-        </div>
+        <div class="title">New Case Assessment Inquiry</div>
+        <table class="data-table">
+          <tr><td class="label">Full Name</td><td class="val">${name}</td></tr>
+          <tr><td class="label">Email</td><td class="val"><a href="mailto:${email}" style="color:#f59e0b;">${email}</a></td></tr>
+          <tr><td class="label">Phone</td><td class="val">${phone}</td></tr>
+          <tr><td class="label">Category</td><td class="val">${finalCategory}</td></tr>
+        </table>
+        <div style="font-size: 12px; color: #94a3b8; text-transform: uppercase; margin-bottom: 6px;">Matter Summary</div>
+        <div class="msg">${message}</div>
       </div>
     </body>
     </html>
@@ -92,16 +88,16 @@ export default async function handler(req, res) {
 
   try {
     await transporter.sendMail({
-      from: `"NEA Intake" <${process.env.SMTP_USER}>`,
-      to: process.env.COMPANY_EMAIL || process.env.SMTP_USER,
+      from: `"NEA Intake" <${smtpUser}>`,
+      to: process.env.COMPANY_EMAIL || process.env.COMPANY_RECEIVE_EMAIL || smtpUser,
       replyTo: email,
-      subject: `[Confidential Intake] ${category} - ${name}`,
+      subject: `[Confidential Intake] ${finalCategory} - ${name}`,
       html: htmlTemplate,
     });
 
     return res.status(200).json({ success: true, message: 'Message sent successfully.' });
   } catch (error) {
-    console.error('Mail delivery failed:', error);
-    return res.status(500).json({ success: false, message: 'Failed to dispatch email.' });
+    console.error('Mail delivery error:', error);
+    return res.status(500).json({ success: false, message: error.message || 'Failed to dispatch email.' });
   }
 }
