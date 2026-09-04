@@ -32,8 +32,8 @@ export default async function handler(req, res) {
 
   // Support both SMTP_* and HOSTINGER_* environment variable naming conventions
   const user = process.env.SMTP_USER || process.env.HOSTINGER_EMAIL;
-  const rawPass = process.env.SMTP_PASS || process.env.HOSTINGER_PASSWORD;
-  const pass = rawPass ? rawPass.replace(/[\s-]/g, '') : '';
+  const pass = process.env.SMTP_PASS || process.env.HOSTINGER_PASSWORD;
+
 
   // Prevent Nodemailer "Missing credentials for PLAIN" crash
   if (!user || !pass) {
