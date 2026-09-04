@@ -324,7 +324,7 @@ export default function App() {
                   href="#contact"
                   className="w-48 h-10 flex items-center justify-center rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-medium transition-all shadow-lg shadow-amber-900/20"
                 >
-                  SCHEDULE CONSULTATION
+                  GET FREE CONSULTATION
                 </a>
               </div>
             </div>
@@ -380,7 +380,7 @@ export default function App() {
                   onClick={(e) => handleNavClick(e, "#contact")}
                   className="block text-center py-3 rounded-lg bg-amber-600 text-white font-medium shadow-md shadow-amber-900/30"
                 >
-                  SCHEDULE CONSULTATION
+                  GET FREE CONSULTATION
                 </a>
               </motion.div>
             )}
