@@ -5,9 +5,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  const { name, email, category, message } = req.body;
+  const { name, email, category, message, phone, customCategory } = req.body;
 
-  if (!name || !email || !message) {
+  if (!name || !email || !message || !category || !phone) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
@@ -66,7 +66,11 @@ export default async function handler(req, res) {
             </tr>
             <tr>
               <td class="data-label">Matter Category</td>
-              <td class="data-value"><span style="color: #fbbf24; font-weight: 600;">${category || 'General Counsel'}</span></td>
+              <td class="data-value"><span style="color: #fbbf24; font-weight: 600;">${category || customCategory || 'General Counsel'}</span></td>
+            </tr>
+            <tr>
+              <td class="data-label">Phone Number</td>
+              <td class="data-value">${phone}</td>
             </tr>
           </table>
 
