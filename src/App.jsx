@@ -36,6 +36,7 @@ import {
   Phone,
   MapPin,
   ArrowUpRight,
+  ChevronLeft,
 } from "lucide-react";
 import FloatingActions from "./components/FloatingActions";
 import PageLoader from "./components/PageLoader";
@@ -163,6 +164,31 @@ const testimonials = [
     rating: 5,
   },
 ];
+
+const briefingVideos = [
+  {
+    id: 1,
+    title: "Cyber Case Briefing",
+    subtitle: "Asset tracing & scam defense",
+    src: "/fraud-calling.mp4",
+    poster: "/prev1.png",
+  },
+  {
+    id: 2,
+    title: "Online Job Fraud",
+    subtitle: "Digital scam & phishing defense",
+    src: "/online-job-fraud.mp4", // replace with your video
+    poster: "/Prev2.png",
+  },
+  {
+    id: 3,
+    title: "UPI Fraud",
+    subtitle: "Digital payment scam & recovery",
+    src: "/upi-fraud.mp4", // replace with your video
+    poster: "/prev3.png",
+  },
+];
+
 // Counting component with viewport trigger
 function MetricCounter({ target, suffix = "", duration = 2 }) {
   const ref = useRef(null);
@@ -204,6 +230,7 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = React.useRef(null);
+  const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -226,6 +253,24 @@ export default function App() {
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+
+  const handleNextVideo = (e) => {
+  e?.stopPropagation();
+  if (videoRef.current) {
+    videoRef.current.pause();
+  }
+  setIsPlaying(false);
+  setActiveCardIndex((prev) => (prev + 1) % briefingVideos.length);
+};
+
+const handlePrevVideo = (e) => {
+  e?.stopPropagation();
+  if (videoRef.current) {
+    videoRef.current.pause();
+  }
+  setIsPlaying(false);
+  setActiveCardIndex((prev) => (prev - 1 + briefingVideos.length) % briefingVideos.length);
+};
 
   const handleContactSubmit = async (e) => {
     e.preventDefault();
@@ -499,43 +544,98 @@ export default function App() {
           </div>
 
           {/* Video Player: Polished mobile centering and margins; exact desktop corner docking preserved */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 20 }}
-            animate={
-              !loading
-                ? { opacity: 1, scale: 1, y: 0 }
-                : { opacity: 0, scale: 0.92, y: 20 }
-            }
-            transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-20 mt-10 md:mt-0 w-full px-5 sm:px-6 md:px-0 max-w-sm sm:max-w-md md:max-w-none md:w-80 lg:w-80 md:absolute md:bottom-20 md:right-20 mx-auto md:mx-0"
+       <motion.div
+  initial={{ opacity: 0, scale: 0.92, y: 20 }}
+  animate={
+    !loading
+      ? { opacity: 1, scale: 1, y: 0 }
+      : { opacity: 0, scale: 0.92, y: 20 }
+  }
+  transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+  className="relative z-20 mt-12 md:mt-0 w-full px-5 sm:px-6 md:px-0 max-w-sm sm:max-w-md md:max-w-none md:w-80 lg:w-80 md:absolute md:bottom-20 md:right-20 mx-auto md:mx-0"
+>
+  {/* Stack Height Wrapper */}
+  <div className="relative h-64 sm:h-72 w-full">
+    {briefingVideos.map((item, index) => {
+      // Calculate relative depth from the active card
+      const diff = (index - activeCardIndex + briefingVideos.length) % briefingVideos.length;
+      const isCurrent = diff === 0;
+
+      // Only show top 3 cards in the visible stack
+      if (diff > 2) return null;
+
+      // Depth transformations for the stack effect
+      const yOffset = diff * -12; // stacks upward slightly
+      const scale = 1 - diff * 0.06; // 1 -> 0.94 -> 0.88
+      const opacity = diff === 0 ? 1 : diff === 1 ? 0.6 : 0.25;
+      const rotate = diff === 0 ? 0 : diff === 1 ? 2.5 : -2;
+
+      return (
+        <motion.div
+          key={item.id}
+          layout
+          initial={false}
+          animate={{
+            y: yOffset,
+            scale: scale,
+            rotate: rotate,
+            opacity: opacity,
+            zIndex: 30 - diff,
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 280,
+            damping: 24,
+          }}
+          style={{ transformOrigin: "bottom center" }}
+          className="absolute inset-0 w-full"
+        >
+          <div
+            onClick={isCurrent ? togglePlay : undefined}
+            className={`group relative rounded-2xl overflow-hidden bg-slate-950/95 border border-slate-800 shadow-2xl backdrop-blur-xl transition-all duration-300 p-2 ${
+              isCurrent ? "cursor-pointer hover:border-amber-500/50" : "pointer-events-none"
+            }`}
           >
-            <div
-              onClick={togglePlay}
-              className="group relative rounded-2xl overflow-hidden bg-slate-950/90 border border-slate-800 hover:border-amber-500/50 shadow-2xl backdrop-blur-xl transition-all duration-300 cursor-pointer p-2"
-            >
-              <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-900">
+            {/* Video Container */}
+            <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-900">
+              {isCurrent ? (
                 <video
                   ref={videoRef}
-                  src="/fraud-calling.mp4"
-                  poster="/prev1.png"
+                  src={item.src}
+                  poster={item.poster}
                   playsInline
                   muted={isMuted}
                   onEnded={() => setIsPlaying(false)}
                   className="w-full h-full object-cover"
                 />
-
-                <div
-                  className={`absolute inset-0 bg-slate-950/40 transition-opacity duration-300 ${isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100"}`}
+              ) : (
+                <img
+                  src={item.poster}
+                  alt={item.title}
+                  className="w-full h-full object-cover filter grayscale contrast-125 brightness-75"
                 />
+              )}
 
-                <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-slate-950/80 text-amber-400 border border-amber-500/20 backdrop-blur-sm pointer-events-none">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                  Briefing
-                </div>
+              {/* Dim vignette */}
+              <div
+                className={`absolute inset-0 bg-slate-950/40 transition-opacity duration-300 ${
+                  isPlaying && isCurrent ? "opacity-0 group-hover:opacity-100" : "opacity-100"
+                }`}
+              />
 
+              {/* Tag Pill */}
+              <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-slate-950/80 text-amber-400 border border-amber-500/20 backdrop-blur-sm pointer-events-none">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                Briefing {index + 1}/{briefingVideos.length}
+              </div>
+
+              {/* Play / Pause Overlay for Active Card */}
+              {isCurrent && (
                 <div className="absolute inset-0 flex items-center justify-center z-10">
                   <div
-                    className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-amber-500/90 hover:bg-amber-400 text-slate-950 flex items-center justify-center shadow-lg transition-all ${isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100"}`}
+                    className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-amber-500/90 hover:bg-amber-400 text-slate-950 flex items-center justify-center shadow-lg transition-all ${
+                      isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100"
+                    }`}
                   >
                     {isPlaying ? (
                       <Pause size={16} className="fill-slate-950" />
@@ -544,32 +644,81 @@ export default function App() {
                     )}
                   </div>
                 </div>
+              )}
 
+              {/* Audio Toggle */}
+              {isCurrent && (
                 <button
                   type="button"
                   onClick={toggleMute}
-                  className="absolute top-2.5 right-2.5 z-20 p-1.5 rounded-full bg-slate-950/70 hover:bg-slate-800 text-slate-300 hover:text-amber-400 border border-slate-700/60 backdrop-blur-sm transition-colors"
+                  className="absolute top-2.5 right-2.5 z-20 p-1.5 rounded-full bg-slate-950/70 hover:bg-slate-800 text-slate-300 hover:text-amber-400 border border-slate-700/60 backdrop-blur-sm transition-colors cursor-pointer"
                   title={isMuted ? "Unmute" : "Mute"}
                 >
                   {isMuted ? <VolumeX size={13} /> : <Volume2 size={13} />}
                 </button>
-              </div>
-
-              <div className="px-2 pt-2.5 pb-1 flex items-center justify-between pointer-events-none">
-                <div>
-                  <p className="text-white text-xs font-bold tracking-tight">
-                    Cyber Case Briefing
-                  </p>
-                  <p className="text-slate-400 text-[10px]">
-                    Asset tracing & scam defense
-                  </p>
-                </div>
-                <span className="text-[10px] font-semibold text-amber-500 border border-amber-500/30 px-2 py-0.5 rounded-md">
-                  {isPlaying ? "Playing" : "Watch"}
-                </span>
-              </div>
+              )}
             </div>
-          </motion.div>
+
+            {/* Card Information Header */}
+            <div className="px-2 pt-2.5 pb-1 flex items-center justify-between">
+              <div>
+                <p className="text-white text-xs font-bold tracking-tight">{item.title}</p>
+                <p className="text-slate-400 text-[10px]">{item.subtitle}</p>
+              </div>
+              <span className="text-[10px] font-semibold text-amber-500 border border-amber-500/30 px-2 py-0.5 rounded-md">
+                {isCurrent && isPlaying ? "Playing" : "Watch"}
+              </span>
+            </div>
+          </div>
+        </motion.div>
+      );
+    })}
+  </div>
+
+  {/* Deck Controls (Next / Prev & Indicators) */}
+  <div className="mt-3 flex items-center justify-between px-1">
+    {/* Step Dots */}
+    <div className="flex items-center gap-1.5">
+      {briefingVideos.map((_, dotIdx) => (
+        <button
+          key={dotIdx}
+          type="button"
+          onClick={() => {
+            if (videoRef.current) videoRef.current.pause();
+            setIsPlaying(false);
+            setActiveCardIndex(dotIdx);
+          }}
+          className={`h-1 rounded-full transition-all duration-300 cursor-pointer ${
+            activeCardIndex === dotIdx
+              ? "w-6 bg-amber-500"
+              : "w-2 bg-slate-700 hover:bg-slate-500"
+          }`}
+          aria-label={`Go to slide ${dotIdx + 1}`}
+        />
+      ))}
+    </div>
+
+    {/* Previous / Next Arrow Buttons */}
+    <div className="flex items-center gap-1.5">
+      <button
+        type="button"
+        onClick={handlePrevVideo}
+        className="w-7 h-7 rounded-full bg-slate-900/90 hover:bg-amber-600 border border-slate-800 hover:border-amber-500 text-slate-300 hover:text-white flex items-center justify-center transition-all cursor-pointer backdrop-blur-sm shadow-md"
+        title="Previous Briefing"
+      >
+        <ChevronLeft size={14} />
+      </button>
+      <button
+        type="button"
+        onClick={handleNextVideo}
+        className="w-7 h-7 rounded-full bg-slate-900/90 hover:bg-amber-600 border border-slate-800 hover:border-amber-500 text-slate-300 hover:text-white flex items-center justify-center transition-all cursor-pointer backdrop-blur-sm shadow-md"
+        title="Next Briefing"
+      >
+        <ChevronRight size={14} />
+      </button>
+    </div>
+  </div>
+</motion.div>
         </section>
 
         {/* Metrics Section with Animated Count-Up */}
